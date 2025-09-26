@@ -1,0 +1,104 @@
+Numero de nodos del grafo: 15
+Numero de aristas del grafo: 19
+
+Vertice origen: 1
+Vertice destino: 13
+
+Iteracion 1
+Nodos generados: 1
+Nodos inspeccionados: -
+
+Iteracion 2
+Nodos generados: -
+Nodos inspeccionados: 1
+
+Iteracion 3
+Nodos generados: 2, 3
+Nodos inspeccionados: 1
+
+Iteracion 4
+Nodos generados: 3
+Nodos inspeccionados: 1, 2
+
+Iteracion 5
+Nodos generados: 3, 4
+Nodos inspeccionados: 1, 2
+
+Iteracion 6
+Nodos generados: 4
+Nodos inspeccionados: 1, 2, 3
+
+Iteracion 7
+Nodos generados: 4, 11
+Nodos inspeccionados: 1, 2, 3
+
+Iteracion 8
+Nodos generados: 11
+Nodos inspeccionados: 1, 2, 3, 4
+
+Iteracion 9
+Nodos generados: 11, 6, 12
+Nodos inspeccionados: 1, 2, 3, 4
+
+Iteracion 10
+Nodos generados: 6, 12
+Nodos inspeccionados: 1, 2, 3, 4, 11
+
+Iteracion 11
+Nodos generados: 6, 12
+Nodos inspeccionados: 1, 2, 3, 4, 11
+
+Iteracion 12
+Nodos generados: 12
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6
+
+Iteracion 13
+Nodos generados: 12, 5, 7, 9, 10
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6
+
+Iteracion 14
+Nodos generados: 5, 7, 9, 10
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12
+
+Iteracion 15
+Nodos generados: 5, 7, 9, 10
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12
+
+Iteracion 16
+Nodos generados: 7, 9, 10
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5
+
+Iteracion 17
+Nodos generados: 7, 9, 10, 13
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5
+
+Iteracion 18
+Nodos generados: 9, 10, 13
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7
+
+Iteracion 19
+Nodos generados: 9, 10, 13, 8, 15
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7
+
+Iteracion 20
+Nodos generados: 10, 13, 8, 15
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7, 9
+
+Iteracion 21
+Nodos generados: 10, 13, 8, 15
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7, 9
+
+Iteracion 22
+Nodos generados: 13, 8, 15
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7, 9, 10
+
+Iteracion 23
+Nodos generados: 13, 8, 15
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7, 9, 10
+
+Iteracion 24
+Nodos generados: 8, 15
+Nodos inspeccionados: 1, 2, 3, 4, 11, 6, 12, 5, 7, 9, 10, 13
+
+Camino: 1 - 2 - 4 - 6 - 5 - 13
+Costo: 36.00
