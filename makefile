@@ -1,55 +1,52 @@
 # =========================
 #  Proyecto: Busquedas no informadas (BFS/DFS)
-#  Estilo: Google (flags estrictos)
+#  C++17 - Estilo Google - Makefile con dependencias
 # =========================
 
-# --- Configuración general ---
+# Compilador y flags
 CXX       := g++
 STD       := gnu++17
 WARNFLAGS := -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
 OPT_REL   := -O2
 OPT_DBG   := -O0 -g3
 DEPFLAGS  := -MMD -MP
+# Descomenta si quieres sanitizers en debug:
+# SANITIZERS := -fsanitize=address,undefined
 
-# --- Rutas ---
+# Directorios
 INCDIR    := include
 SRCDIR    := src
 BUILDDIR  := build
 BINDIR    := bin
 TARGET    := $(BINDIR)/busquedas
 
-# --- Fuentes y objetos ---
+# Fuentes / objetos
 SRCS      := $(wildcard $(SRCDIR)/*.cc)
 OBJS      := $(patsubst $(SRCDIR)/%.cc,$(BUILDDIR)/%.o,$(SRCS))
 DEPS      := $(OBJS:.o=.d)
 
-# --- Flags de compilación y enlace ---
+# Flags
 CPPFLAGS  := -I$(INCDIR)
 CXXFLAGS  := -std=$(STD) $(WARNFLAGS) $(DEPFLAGS)
 LDFLAGS   :=
 
 # =========================
-#        Reglas
+# Reglas
 # =========================
 
-# Por defecto: build release
-.PHONY: all
+.PHONY: all release debug clean distclean run help dirs
+
 all: release
 
-# Build release (optimizado)
-.PHONY: release
 release: CXXFLAGS += $(OPT_REL)
 release: dirs $(TARGET)
 	@echo ">> Listo (release): $(TARGET)"
 
-# Build debug (con símbolos)
-.PHONY: debug
-debug: CXXFLAGS += $(OPT_DBG)
+debug: CXXFLAGS += $(OPT_DBG) $(SANITIZERS)
+debug: LDFLAGS  += $(SANITIZERS)
 debug: dirs $(TARGET)
 	@echo ">> Listo (debug): $(TARGET)"
 
-# Crear carpetas
-.PHONY: dirs
 dirs:
 	@mkdir -p $(BUILDDIR) $(BINDIR)
 
@@ -57,38 +54,31 @@ dirs:
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-# Compilación incremental con dependencias
+# Compilación con dependencias automáticas
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cc
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
-# Limpiar
-.PHONY: clean
+# Ejecutar con parámetros (sobrescribe ARGS en línea de comandos)
+# Ejemplo:
+#  make run ARGS="--input data/Grafo1.txt --origin 1 --dest 4 --strategy bfs --output resultado.txt"
+run: release
+	@$(TARGET) $(ARGS)
+
 clean:
 	@echo ">> Limpiando objetos y dependencias..."
 	@rm -rf $(BUILDDIR)
 
-.PHONY: distclean
 distclean: clean
 	@echo ">> Limpiando binarios..."
 	@rm -rf $(BINDIR)
 
-# Ejecutar con parámetros (puedes sobreescribir ARGS en línea de comandos)
-# Ejemplo:
-#   make run ARGS="--input datos.txt --origin 1 --dest 4 --strategy bfs --output resultado.txt"
-.PHONY: run
-run: release
-	@$(TARGET) $(ARGS)
-
-# Objetivo de ayuda
-.PHONY: help
 help:
-	@echo "Targets disponibles:"
-	@echo "  make            -> build release (por defecto)"
-	@echo "  make release    -> build optimizado"
-	@echo "  make debug      -> build con símbolos de depuración"
-	@echo "  make run ARGS='--input ... --origin ... --dest ... --strategy bfs|dfs --output ...'"
-	@echo "  make clean      -> borra objetos intermedios"
-	@echo "  make distclean  -> borra objetos y binarios"
+	@echo "Targets:"
+	@echo "  make / make release   -> build optimizado"
+	@echo "  make debug            -> build debug (opcional con sanitizers)"
+	@echo "  make run ARGS='...'   -> ejecutar con argumentos"
+	@echo "  make clean            -> borra objetos"
+	@echo "  make distclean        -> borra objetos y binarios"
 
-# Incluir dependencias generadas automáticamente
+# Incluir archivos .d generados por -MMD -MP
 -include $(DEPS)

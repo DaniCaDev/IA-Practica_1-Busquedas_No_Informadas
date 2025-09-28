@@ -1,0 +1,52 @@
+============================================
+         EJECUCION BFS
+============================================
+
+Vertices del grafo : 5
+Aristas del grafo  : 5
+Origen             : 1
+Destino            : 4
+--------------------------------------------
+
+--------------- Iteracion 1 ---------------
+Generados (acumulados): [ 1 ]
+Inspeccionados (acumulados): [ - ]
+--------------------------------------------
+>> Nodo expandido: 1
+   Sucesores detectados: [ 2, 3 ]
+============================================
+
+--------------- Iteracion 2 ---------------
+Generados (acumulados): [ 1, 2, 3 ]
+Inspeccionados (acumulados): [ 1 ]
+--------------------------------------------
+>> Nodo expandido: 2
+   Sucesores detectados: [ 1, 4, 5 ]
+   -> El nodo 1 no se añade (ya visitado o es padre).
+   -> El nodo 4 es el OBJETIVO alcanzado!
+============================================
+
+--------------- Iteracion 3 ---------------
+Generados (acumulados): [ 1, 2, 3, 4, 5 ]
+Inspeccionados (acumulados): [ 1, 2 ]
+--------------------------------------------
+>> Nodo expandido: 3
+   Sucesores detectados: [ 1, 4 ]
+   -> El nodo 1 no se añade (ya visitado o es padre).
+   -> El nodo 4 es el OBJETIVO alcanzado!
+============================================
+
+--------------- Iteracion 4 ---------------
+Generados (acumulados): [ 1, 2, 3, 4, 5 ]
+Inspeccionados (acumulados): [ 1, 2, 3 ]
+--------------------------------------------
+>> Nodo expandido: 4
+   Sucesores detectados: [ 2, 3 ]
+   -> El nodo 2 no se añade (ya visitado o es padre).
+   -> El nodo 3 no se añade (ya visitado o es padre).
+============================================
+
+============= CAMINO ENCONTRADO =============
+1 -> 2 -> 4
+Coste total: 2.73
+============================================

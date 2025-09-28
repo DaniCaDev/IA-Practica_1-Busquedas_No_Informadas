@@ -1,9 +1,9 @@
 ============================================
-         EJECUCION BFS
+        EJECUCION BFS
 ============================================
 
 Vertices del grafo : 5
-Aristas del grafo  : 5
+Aristas del grafo  : 4
 Origen             : 1
 Destino            : 4
 --------------------------------------------
@@ -19,13 +19,12 @@ Nodos inspeccionados: [ - ]
 Nodos generados: [ 1, 2, 3 ]
 Nodos inspeccionados: [ 1 ]
 >> Nodo expandido: 2
-   Sucesores: [ 1, 4, 5 ]
+   Sucesores: [ 1, 5 ]
    -> El nodo 1 no se añade (ya visitado o es padre).
-   -> El nodo 4 es el OBJETIVO alcanzado!
 ============================================
 
 ----------- Iteracion 3 -----------
-Nodos generados: [ 1, 2, 3, 4, 5 ]
+Nodos generados: [ 1, 2, 3, 1, 5 ]
 Nodos inspeccionados: [ 1, 2 ]
 >> Nodo expandido: 3
    Sucesores: [ 1, 4 ]
@@ -34,20 +33,22 @@ Nodos inspeccionados: [ 1, 2 ]
 ============================================
 
 ----------- Iteracion 4 -----------
-Nodos generados: [ 1, 2, 3, 4, 5, 4 ]
+Nodos generados: [ 1, 2, 3, 1, 5, 1, 4 ]
 Nodos inspeccionados: [ 1, 2, 3 ]
->> Nodo expandido: 4
-   Sucesores: [  ]
+>> Nodo expandido: 5
+   Sucesores: [ 2 ]
+   -> El nodo 2 no se añade (ya visitado o es padre).
 ============================================
 
 ----------- Iteracion 5 -----------
-Nodos generados: [ 1, 2, 3, 4, 5, 4 ]
-Nodos inspeccionados: [ 1, 2, 3, 4 ]
+Nodos generados: [ 1, 2, 3, 1, 5, 1, 4, 2 ]
+Nodos inspeccionados: [ 1, 2, 3, 5 ]
 >> Nodo expandido: 4
-   Sucesores: [  ]
+   Sucesores: [ 3 ]
+   -> El nodo 3 no se añade (ya visitado o es padre).
 ============================================
 
 ============= CAMINO ENCONTRADO =============
-1 -> 2 -> 4
-Coste total: 2.23
+1 -> 3 -> 4
+Coste total: 2.00
 ============================================

@@ -6,43 +6,29 @@
 
 #include "graph.h"
 
-/**
- * @brief Estrategia de búsqueda no informada.
- */
+// Estrategia de búsqueda.
 enum class Strategy { kBfs, kDfs };
 
-/**
- * @brief Resultado completo de la búsqueda, con trazas por iteración.
- */
+// Resultado completo con trazas por iteración.
 struct SearchResult {
-  std::vector<int> path;                           ///< Camino desde origen a destino (1..n).
-  double total_cost = -1.0;                        ///< Suma de costes del camino o -1 si no encontrado.
-  std::vector<std::vector<int>> frontier_steps;    ///< Frontera (nodos generados) por iteración.
-  std::vector<std::vector<int>> visited_steps;     ///< Visitados (nodos inspeccionados) por iteración.
-  bool found = false;                              ///< true si se halló camino.
+  std::vector<int> path;                    // Camino final (1..n).
+  double total_cost = -1.0;                 // Coste total del camino, -1 si no existe.
+
+  // Una iteración = una expansión de un nodo.
+  std::vector<int> expanded_nodes;                  // Nodo expandido en cada iteración.
+  std::vector<std::vector<int>> successors_step;    // Sucesores vistos esa iteración.
+  std::vector<std::vector<int>> enqueued_step;      // Sucesores realmente encolados/apilados.
+
+  // Acumulados (con duplicados) que se imprimen en el informe.
+  std::vector<std::vector<int>> generated_acc;      // Historial de “nodos generados” (con duplicados).
+  std::vector<std::vector<int>> inspected_acc;      // Historial de “nodos inspeccionados”.
+
+  bool found = false;                                // true si se halló un camino.
 };
 
-/**
- * @brief Implementa búsquedas en amplitud y profundidad sobre un grafo no dirigido.
- */
 class UninformedSearch {
  public:
-  /**
-   * @brief Ejecuta BFS o DFS para hallar un camino entre origen y destino.
-   * @param g Grafo.
-   * @param origin Vértice origen (1..n).
-   * @param dest Vértice destino (1..n).
-   * @param strategy Estrategia: BFS o DFS.
-   * @return SearchResult con camino, coste y trazas por iteración.
-   */
   static SearchResult Run(const Graph& g, int origin, int dest, Strategy strategy);
-
-  /**
-   * @brief Reconstruye el coste total de un camino en el grafo.
-   * @param g Grafo.
-   * @param path Camino (1..n).
-   * @return Suma de costes o -1.0 si el camino no es válido.
-   */
   static double ComputePathCost(const Graph& g, const std::vector<int>& path);
 
  private:
@@ -51,3 +37,4 @@ class UninformedSearch {
 };
 
 #endif  // IA_PRACTICE_SEARCH_H_
+

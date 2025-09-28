@@ -1,16 +1,15 @@
 #include "search.h"
 
+#include <algorithm>
 #include <deque>
 #include <stack>
-#include <unordered_set>
-#include <algorithm>
 
 namespace {
 
-// Devuelve el camino reconstruido desde 'goal' hacia atrás con el vector parent.
+// Reconstruye camino origin->goal con parent[v] = padre de v (o -1).
 std::vector<int> ReconstructPath(int origin, int goal, const std::vector<int>& parent) {
   std::vector<int> path;
-  if (goal <= 0) return path;
+  if (goal < 0) return path;
   int cur = goal;
   while (cur != -1) {
     path.push_back(cur);
@@ -22,14 +21,6 @@ std::vector<int> ReconstructPath(int origin, int goal, const std::vector<int>& p
   return path;
 }
 
-// Convierte un contenedor a vector<int> para volcar en las trazas (frontera).
-template <typename Iterable>
-std::vector<int> ToVectorInt(const Iterable& c) {
-  std::vector<int> out;
-  for (const auto& x : c) out.push_back(x);
-  return out;
-}
-
 }  // namespace
 
 SearchResult UninformedSearch::Run(const Graph& g, int origin, int dest, Strategy strategy) {
@@ -37,8 +28,7 @@ SearchResult UninformedSearch::Run(const Graph& g, int origin, int dest, Strateg
       dest > static_cast<int>(g.NumVertices())) {
     return {};
   }
-  if (strategy == Strategy::kBfs) return Bfs(g, origin, dest);
-  return Dfs(g, origin, dest);
+  return (strategy == Strategy::kBfs) ? Bfs(g, origin, dest) : Dfs(g, origin, dest);
 }
 
 double UninformedSearch::ComputePathCost(const Graph& g, const std::vector<int>& path) {
@@ -46,15 +36,15 @@ double UninformedSearch::ComputePathCost(const Graph& g, const std::vector<int>&
   double cost = 0.0;
   for (std::size_t i = 1; i < path.size(); ++i) {
     double w = g.EdgeCost(path[i - 1], path[i]);
-    if (w < 0.0) return -1.0;  // arista inexistente
+    if (w < 0.0) return -1.0;
     cost += w;
   }
   return cost;
 }
 
+// ======================= BFS =======================
 SearchResult UninformedSearch::Bfs(const Graph& g, int origin, int dest) {
   SearchResult res;
-  res.found = false;
 
   const int n = static_cast<int>(g.NumVertices());
   std::vector<int> parent(n + 1, -1);
@@ -64,46 +54,71 @@ SearchResult UninformedSearch::Bfs(const Graph& g, int origin, int dest) {
   q.push_back(origin);
   visited[origin] = true;
 
-  std::vector<int> visited_list;  // para trazar "nodos inspeccionados"
+  // Acumulados (con duplicados).
+  std::vector<int> gen_acc;   // historial de “generados”.
+  std::vector<int> insp_acc;  // historial de inspeccionados.
 
-  // Iteración 1: frontera inicial (solo el origen), y aún sin inspeccionados
-  res.frontier_steps.push_back(ToVectorInt(q));
-  res.visited_steps.push_back(visited_list);
+  // El origen cuenta como primer “generado”.
+  gen_acc.push_back(origin);
 
   while (!q.empty()) {
     int u = q.front();
     q.pop_front();
 
-    // Añadimos a inspeccionados y registramos la frontera tras sacar u
-    visited_list.push_back(u);
-    res.frontier_steps.push_back(ToVectorInt(q));
-    res.visited_steps.push_back(visited_list);
+    // --- Snapshot al inicio de la iteración (antes de expandir u) ---
+    res.expanded_nodes.push_back(u);
+    res.generated_acc.push_back(gen_acc);   // acumulado hasta ahora (con duplicados)
+    res.inspected_acc.push_back(insp_acc);  // inspeccionados hasta ahora
 
+    // Inspeccionamos u
+    insp_acc.push_back(u);
+
+    // Parada inmediata si el inspeccionado es el destino (criterio profesora)
     if (u == dest) {
+      // Iteración sin sucesores (no se expanden más)
+      res.successors_step.push_back({});
+      res.enqueued_step.push_back({});
+
+      // Snapshot final “post-inspección” (estilo de la foto negra)
+      res.expanded_nodes.push_back(u);
+      res.generated_acc.push_back(gen_acc);   // generados no cambian
+      res.inspected_acc.push_back(insp_acc);  // ahora incluye al destino
+
       res.path = ReconstructPath(origin, dest, parent);
       res.total_cost = ComputePathCost(g, res.path);
       res.found = true;
       return res;
     }
 
-    for (int v : g.Neighbors(u)) {
+    // Generamos sucesores de u
+    std::vector<int> succ_this;
+    std::vector<int> enq_this;
+
+    auto neigh = g.Neighbors(u);
+    std::sort(neigh.begin(), neigh.end());  // orden determinista
+
+    int parent_u = parent[u];  // -1 en la raíz
+    for (int v : neigh) {
+      succ_this.push_back(v);            // se muestran todos los sucesores
+      if (v != parent_u) gen_acc.push_back(v);  // acumulado con duplicados (excluye padre)
       if (!visited[v]) {
         visited[v] = true;
         parent[v] = u;
         q.push_back(v);
+        enq_this.push_back(v);
       }
     }
-    // Tras generar vecinos de u, registramos el estado (frontera y visitados).
-    res.frontier_steps.push_back(ToVectorInt(q));
-    res.visited_steps.push_back(visited_list);
+
+    res.successors_step.push_back(succ_this);
+    res.enqueued_step.push_back(enq_this);
   }
 
   return res;  // no encontrado
 }
 
+// ======================= DFS =======================
 SearchResult UninformedSearch::Dfs(const Graph& g, int origin, int dest) {
   SearchResult res;
-  res.found = false;
 
   const int n = static_cast<int>(g.NumVertices());
   std::vector<int> parent(n + 1, -1);
@@ -112,83 +127,67 @@ SearchResult UninformedSearch::Dfs(const Graph& g, int origin, int dest) {
   std::stack<int> st;
   st.push(origin);
 
-  std::vector<int> visited_list;
+  std::vector<int> gen_acc;
+  std::vector<int> insp_acc;
 
-  // Iteración 1: frontera inicial (origen en la pila), sin inspeccionados
-  // Para mostrar la pila como "frontera" en orden LIFO, la volcamos a vector.
-  {
-    std::stack<int> tmp = st;
-    std::vector<int> frontier;
-    while (!tmp.empty()) {
-      frontier.push_back(tmp.top());
-      tmp.pop();
-    }
-    res.frontier_steps.push_back(frontier);
-    res.visited_steps.push_back(visited_list);
-  }
+  gen_acc.push_back(origin);
 
   while (!st.empty()) {
     int u = st.top();
     st.pop();
 
     if (visited[u]) {
-      // Registrar estado tras descartar repetidos
-      std::stack<int> tmp = st;
-      std::vector<int> frontier;
-      while (!tmp.empty()) {
-        frontier.push_back(tmp.top());
-        tmp.pop();
-      }
-      res.frontier_steps.push_back(frontier);
-      res.visited_steps.push_back(visited_list);
+      // Descartes por ya visitado no cuentan como iteración.
       continue;
     }
 
+    // --- Snapshot al inicio de la iteración ---
+    res.expanded_nodes.push_back(u);
+    res.generated_acc.push_back(gen_acc);
+    res.inspected_acc.push_back(insp_acc);
+
+    // Inspeccionar u
     visited[u] = true;
-    visited_list.push_back(u);
+    insp_acc.push_back(u);
 
-    // Registrar tras inspeccionar u
-    {
-      std::stack<int> tmp = st;
-      std::vector<int> frontier;
-      while (!tmp.empty()) {
-        frontier.push_back(tmp.top());
-        tmp.pop();
-      }
-      res.frontier_steps.push_back(frontier);
-      res.visited_steps.push_back(visited_list);
-    }
-
+    // Parada inmediata si u es el destino
     if (u == dest) {
+      res.successors_step.push_back({});
+      res.enqueued_step.push_back({});
+
+      // Snapshot final “post-inspección”
+      res.expanded_nodes.push_back(u);
+      res.generated_acc.push_back(gen_acc);
+      res.inspected_acc.push_back(insp_acc);
+
       res.path = ReconstructPath(origin, dest, parent);
       res.total_cost = ComputePathCost(g, res.path);
       res.found = true;
       return res;
     }
 
-    // En DFS apilamos vecinos. Para un orden "natural", apilamos en reversa
-    // para que el menor índice salga antes (opcional y determinista).
-    const auto& neigh = g.Neighbors(u);
+    // Sucesores; para DFS apilamos en orden inverso tras ordenar
+    auto neigh = g.Neighbors(u);
+    std::sort(neigh.begin(), neigh.end());
+    std::vector<int> succ_this;
+    std::vector<int> enq_this;
+
+    int parent_u = parent[u];
     for (auto it = neigh.rbegin(); it != neigh.rend(); ++it) {
       int v = *it;
+      succ_this.push_back(v);
+      if (v != parent_u) gen_acc.push_back(v);  // acumulado con duplicados (excluye padre)
       if (!visited[v]) {
         if (parent[v] == -1) parent[v] = u;
         st.push(v);
+        enq_this.push_back(v);
       }
     }
 
-    // Registrar estado tras generar
-    {
-      std::stack<int> tmp = st;
-      std::vector<int> frontier;
-      while (!tmp.empty()) {
-        frontier.push_back(tmp.top());
-        tmp.pop();
-      }
-      res.frontier_steps.push_back(frontier);
-      res.visited_steps.push_back(visited_list);
-    }
+    res.successors_step.push_back(succ_this);
+    res.enqueued_step.push_back(enq_this);
   }
 
-  return res;  // no encontrado
+  return res;
 }
+
