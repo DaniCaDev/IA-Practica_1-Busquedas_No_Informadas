@@ -7,7 +7,7 @@
 #include "graph.h"
 
 // Estrategia de búsqueda.
-enum class Strategy { kBfs, kDfs };
+enum class Strategy { kBfs, kDfs, kBfsMulti };
 
 // Resultado completo con trazas por iteración.
 struct SearchResult {
@@ -34,6 +34,7 @@ class UninformedSearch {
  private:
   static SearchResult Bfs(const Graph& g, int origin, int dest);
   static SearchResult Dfs(const Graph& g, int origin, int dest);
+  static SearchResult BfsMulti(const Graph& g, int origin, int dest, int max_runs);
 };
 
 #endif  // IA_PRACTICE_SEARCH_H_

@@ -5,6 +5,8 @@
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
+#include <random> 
+
 
 namespace {
 
@@ -24,13 +26,29 @@ std::vector<int> ReconstructPath(int origin, int goal, const std::vector<int>& p
 
 }  // namespace
 
+//SearchResult UninformedSearch::Run(const Graph& g, int origin, int dest, Strategy strategy) {
+//  if (origin < 1 || dest < 1 || origin > static_cast<int>(g.NumVertices()) ||
+//      dest > static_cast<int>(g.NumVertices())) {
+//    return {};
+//  }
+//  return (strategy == Strategy::kBfs) ? Bfs(g, origin, dest) : Dfs(g, origin, dest);
+//}
+
+
 SearchResult UninformedSearch::Run(const Graph& g, int origin, int dest, Strategy strategy) {
-  if (origin < 1 || dest < 1 || origin > static_cast<int>(g.NumVertices()) ||
-      dest > static_cast<int>(g.NumVertices())) {
+  if (origin < 1 || dest < 1 ||
+      origin > static_cast<int>(g.NumVertices()) ||
+      dest   > static_cast<int>(g.NumVertices())) {
     return {};
   }
-  return (strategy == Strategy::kBfs) ? Bfs(g, origin, dest) : Dfs(g, origin, dest);
+  switch (strategy) {
+    case Strategy::kBfs:      return Bfs(g, origin, dest);
+    case Strategy::kDfs:      return Dfs(g, origin, dest);
+    case Strategy::kBfsMulti: return BfsMulti(g, origin, dest, 10); // Ponemos el máximo run 
+  }
+   return {};
 }
+
 
 double UninformedSearch::ComputePathCost(const Graph& g, const std::vector<int>& path) {
   if (path.size() < 2) return 0.0;
@@ -167,7 +185,7 @@ SearchResult UninformedSearch::Dfs(const Graph& g, int origin, int dest) {
     // Si este nodo ya fue inspeccionado, lo ignoramos (no cuenta como iteración)
     if (inspected[cur.u]) continue;
 
-    // ---------- Snapshot AL INICIO de la iteración (antes de generar sucesores) ----------
+    // ----------  AL INICIO de la iteración (antes de generar sucesores) ----------
     res.expanded_nodes.push_back(cur.u);
     res.generated_acc.push_back(gen_acc);
     res.inspected_acc.push_back(insp_acc);
@@ -202,6 +220,97 @@ SearchResult UninformedSearch::Dfs(const Graph& g, int origin, int dest) {
   }
 
   return res;  // no encontrado
+}
+
+
+SearchResult UninformedSearch::BfsMulti(const Graph& g, int origin, int dest, int max_runs) {
+  SearchResult best;  // devolveremos el primer éxito; si no, queda vacío
+
+  if (origin == dest) {
+    best.path = {origin};
+    best.total_cost = 0.0;
+    best.found = true;
+    return best;
+  }
+  const auto& root_neigh = g.Neighbors(origin);
+  if (root_neigh.empty()) return best;  // sin hijos del origen, imposible
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<int> pick(0, static_cast<int>(root_neigh.size()) - 1);
+
+  for (int run = 0; run < max_runs; ++run) {
+    int child = root_neigh[pick(gen)];
+
+    // Estructuras del BFS estándar
+    const int n = static_cast<int>(g.NumVertices());
+    std::vector<int> parent(n + 1, -1);
+    std::vector<bool> discovered(n + 1, false);  // marcar al ENCOLAR
+    std::vector<bool> inspected(n + 1, false);   // no inspeccionar dos veces
+
+    std::deque<int> q;
+
+    // Acumulados para el informe (se resetean en cada ejecución)
+    std::vector<int> gen_acc;
+    std::vector<int> insp_acc;
+
+    // -------- Iteración de "inspección del origen" (no se expanden sus sucesores) --------
+    // Iteración 1 del run: snapshot del origen
+    best.expanded_nodes.push_back(origin);
+    gen_acc.push_back(origin);
+    best.generated_acc.push_back(gen_acc);
+    best.inspected_acc.push_back(insp_acc);
+    // Marcar inspeccionado el origen en este run
+    inspected[origin] = true;
+    parent[origin] = -1;
+    insp_acc.push_back(origin);
+
+    // -------- Arranque BFS desde un hijo aleatorio del origen --------
+    // Lo contamos como "generado" y lo encolamos para procesarlo
+    gen_acc.push_back(child);
+    discovered[child] = true;
+    parent[child] = origin;
+    q.push_back(child);
+    while (!q.empty()) {
+      int u = q.front(); q.pop_front();
+      if (inspected[u]) continue;
+      inspected[u] = true;
+      // Snapshot AL INICIO de la iteración (antes de generar sucesores)
+      best.expanded_nodes.push_back(u);
+      best.generated_acc.push_back(gen_acc);
+      best.inspected_acc.push_back(insp_acc);
+      // Inspeccionamos u
+      insp_acc.push_back(u);
+      if (u == dest) {
+        // Camino y coste
+        best.path = ReconstructPath(origin, dest, parent);
+        best.total_cost = ComputePathCost(g, best.path);
+        best.found = true;
+        return best;  // éxito: devolvemos inmediatamente
+      }
+      // Generar sucesores en orden natural; “generados” con duplicados (excluye el padre)
+      const auto& neigh = g.Neighbors(u);
+
+      std::vector<int> succ_this, enq_this;
+      for (int v : neigh) {
+        succ_this.push_back(v);
+        if (v != parent[u]) gen_acc.push_back(v);
+        if (!discovered[v]) {
+          discovered[v] = true;
+          parent[v] = u;
+          q.push_back(v);
+          enq_this.push_back(v);
+        }
+      }
+
+      best.successors_step.push_back(succ_this);
+      best.enqueued_step.push_back(enq_this);
+    }
+    // Si no se encontró en este run, se repite el bucle escogiendo otro hijo al azar.
+    // (Las trazas de los runs se concatenan en 'best' tal y como están; esto no afecta al camino/coste).
+  }
+  // No encontrado tras max_runs
+  return best;
 }
 
 

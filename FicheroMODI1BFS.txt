@@ -1,0 +1,152 @@
+============================================
+         EJECUCION DFS
+============================================
+
+Vertices del grafo : 15
+Aristas del grafo  : 14
+Origen             : 1
+Destino            : 14
+--------------------------------------------
+
+----------- Iteracion 1 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 2 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 3 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 4 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 5 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 6 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 7 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 8 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 9 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 10 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [ 1 ]
+============================================
+
+----------- Iteracion 11 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 12 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 13 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 14 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 15 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 16 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 17 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 18 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 19 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 20 -----------
+Nodos generados: [ 1, 3 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+============= CAMINO NO ENCONTRADO =============
+============================================

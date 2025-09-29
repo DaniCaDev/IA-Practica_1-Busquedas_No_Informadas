@@ -1,0 +1,82 @@
+============================================
+         EJECUCION DFS
+============================================
+
+Vertices del grafo : 15
+Aristas del grafo  : 13
+Origen             : 1
+Destino            : 9
+--------------------------------------------
+
+----------- Iteracion 1 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 2 -----------
+Nodos generados: [ 1, 3, 4 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 3 -----------
+Nodos generados: [ 1, 3, 4 ]
+Nodos inspeccionados: [ 1, 3 ]
+>> Nodo expandido: 4
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 4 -----------
+Nodos generados: [ 1, 3, 4, 5, 6 ]
+Nodos inspeccionados: [ 1, 3, 4 ]
+>> Nodo expandido: 5
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 5 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7 ]
+Nodos inspeccionados: [ 1, 3, 4, 5 ]
+>> Nodo expandido: 2
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 6 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2 ]
+>> Nodo expandido: 7
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 7 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7 ]
+>> Nodo expandido: 6
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 8 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 11, 14 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6 ]
+>> Nodo expandido: 11
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 9 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 11, 14 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 11 ]
+>> Nodo expandido: 14
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 10 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 11, 14, 10 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 11, 14 ]
+>> Nodo expandido: 10
+   Sucesores: [  ]
+============================================
+
+============= CAMINO NO ENCONTRADO =============
+============================================

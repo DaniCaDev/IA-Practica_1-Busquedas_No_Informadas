@@ -1,0 +1,47 @@
+// Variables de estado del menú:
+std::string path;
+int origin = -1, dest = -1;
+std::string strat = "dfs";        // por defecto DFS (puedes cambiarlo)
+std::string out_path = "resultado.txt";
+
+while (true) {
+  PrintMenu();
+  std::cout << "Opcion: ";
+  int op; if (!(std::cin >> op)) break;
+
+  if (op == 1) {
+    std::cout << "Ruta del fichero: ";
+    std::cin >> path;
+    if (!g.LoadFromFile(path)) {
+      std::cout << "Error cargando grafo.\n";
+    } else {
+      std::cout << "Grafo cargado. n=" << g.NumVertices()
+                << " m=" << g.NumEdges() << "\n";
+    }
+  } else if (op == 2) {
+    std::cout << "Origen: "; std::cin >> origin;
+    std::cout << "Destino: "; std::cin >> dest;
+  } else if (op == 3) {
+    std::cout << "Estrategia [dfs | bfs | bfs-multi]: ";
+    std::cin >> strat;
+    Strategy st = StrategyFromString(strat);
+    std::cout << "Estrategia seleccionada: "
+              << (st == Strategy::kDfs ? "DFS" : (st == Strategy::kBfs ? "BFS" : "BFS-MULTI"))
+              << "\n";
+  } else if (op == 4) {
+    if (path.empty() || origin < 1 || dest < 1) {
+      std::cout << "Faltan datos (grafo/origen/destino).\n";
+      continue;
+    }
+    Strategy st = StrategyFromString(strat);
+    std::cout << "Ejecutando " << (st == Strategy::kDfs ? "DFS" : (st == Strategy::kBfs ? "BFS" : "BFS-MULTI")) << "...\n";
+    SearchResult r = UninformedSearch::Run(g, origin, dest, st);
+    if (r.found) r.total_cost = UninformedSearch::ComputePathCost(g, r.path);
+    DumpReport(g, origin, dest, r, out_path, st);
+    std::cout << "Informe generado en: " << out_path << "\n";
+  } else if (op == 5) {
+    break;
+  } else {
+    std::cout << "Opcion invalida.\n";
+  }
+}

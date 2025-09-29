@@ -1,0 +1,105 @@
+============================================
+         EJECUCION DFS
+============================================
+
+Vertices del grafo : 15
+Aristas del grafo  : 14
+Origen             : 1
+Destino            : 14
+--------------------------------------------
+
+----------- Iteracion 1 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 2 -----------
+Nodos generados: [ 1, 3, 4 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 3 -----------
+Nodos generados: [ 1, 3, 4 ]
+Nodos inspeccionados: [ 1, 3 ]
+>> Nodo expandido: 4
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 4 -----------
+Nodos generados: [ 1, 3, 4, 5, 6 ]
+Nodos inspeccionados: [ 1, 3, 4 ]
+>> Nodo expandido: 5
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 5 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7 ]
+Nodos inspeccionados: [ 1, 3, 4, 5 ]
+>> Nodo expandido: 2
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 6 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2 ]
+>> Nodo expandido: 7
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 7 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7 ]
+>> Nodo expandido: 6
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 8 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 9, 11, 14 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6 ]
+>> Nodo expandido: 9
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 9 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 9, 11, 14, 12, 13 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 9 ]
+>> Nodo expandido: 12
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 10 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 9, 11, 14, 12, 13 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 9, 12 ]
+>> Nodo expandido: 13
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 11 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 9, 11, 14, 12, 13, 8 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 9, 12, 13 ]
+>> Nodo expandido: 8
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 12 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 9, 11, 14, 12, 13, 8 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 9, 12, 13, 8 ]
+>> Nodo expandido: 11
+   Sucesores: [  ]
+============================================
+
+----------- Iteracion 13 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 6, 4, 9, 11, 14, 12, 13, 8 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 2, 7, 6, 9, 12, 13, 8, 11 ]
+>> Nodo expandido: 14
+   Sucesores: [  ]
+============================================
+
+============= CAMINO ENCONTRADO =============
+1 -> 4 -> 5 -> 7 -> 6 -> 14
+Coste total: 27.00
+============================================

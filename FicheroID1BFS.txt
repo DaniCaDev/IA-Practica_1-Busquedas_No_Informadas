@@ -1,0 +1,95 @@
+============================================
+         EJECUCION BFS
+============================================
+
+Vertices del grafo : 15
+Aristas del grafo  : 14
+Origen             : 1
+Destino            : 14
+--------------------------------------------
+
+----------- Iteracion 1 -----------
+Nodos generados: [ 1 ]
+Nodos inspeccionados: [ - ]
+>> Nodo expandido: 1
+   Sucesores: [ 3, 4 ]
+============================================
+
+----------- Iteracion 2 -----------
+Nodos generados: [ 1, 3, 4 ]
+Nodos inspeccionados: [ 1 ]
+>> Nodo expandido: 3
+   Sucesores: [ 1 ]
+   -> El nodo 1 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 3 -----------
+Nodos generados: [ 1, 3, 4 ]
+Nodos inspeccionados: [ 1, 3 ]
+>> Nodo expandido: 4
+   Sucesores: [ 1, 5, 6 ]
+   -> El nodo 1 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 4 -----------
+Nodos generados: [ 1, 3, 4, 5, 6 ]
+Nodos inspeccionados: [ 1, 3, 4 ]
+>> Nodo expandido: 5
+   Sucesores: [ 2, 4, 7 ]
+   -> El nodo 4 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 5 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7 ]
+Nodos inspeccionados: [ 1, 3, 4, 5 ]
+>> Nodo expandido: 6
+   Sucesores: [ 4, 7, 9, 11, 14 ]
+   -> El nodo 4 no se añade (ya visitado o es padre).
+   -> El nodo 7 no se añade (ya visitado o es padre).
+   -> El nodo 14 es el OBJETIVO alcanzado!
+============================================
+
+----------- Iteracion 6 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 7, 9, 11, 14 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 6 ]
+>> Nodo expandido: 2
+   Sucesores: [ 5 ]
+   -> El nodo 5 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 7 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 7, 9, 11, 14 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 6, 2 ]
+>> Nodo expandido: 7
+   Sucesores: [ 5, 6 ]
+   -> El nodo 5 no se añade (ya visitado o es padre).
+   -> El nodo 6 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 8 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 7, 9, 11, 14, 6 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 6, 2, 7 ]
+>> Nodo expandido: 9
+   Sucesores: [ 6, 12, 13 ]
+   -> El nodo 6 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 9 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 7, 9, 11, 14, 6, 12, 13 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 6, 2, 7, 9 ]
+>> Nodo expandido: 11
+   Sucesores: [ 6 ]
+   -> El nodo 6 no se añade (ya visitado o es padre).
+============================================
+
+----------- Iteracion 10 -----------
+Nodos generados: [ 1, 3, 4, 5, 6, 2, 7, 7, 9, 11, 14, 6, 12, 13 ]
+Nodos inspeccionados: [ 1, 3, 4, 5, 6, 2, 7, 9, 11 ]
+>> Nodo expandido: 14
+   Sucesores: [  ]
+============================================
+
+============= CAMINO ENCONTRADO =============
+1 -> 4 -> 6 -> 14
+Coste total: 14.00
+============================================
