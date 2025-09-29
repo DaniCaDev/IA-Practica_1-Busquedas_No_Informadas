@@ -5,7 +5,7 @@
 
 # Compilador y flags
 CXX       := g++
-STD       := gnu++17
+STD       := gnu++23
 WARNFLAGS := -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
 OPT_REL   := -O2
 OPT_DBG   := -O0 -g3

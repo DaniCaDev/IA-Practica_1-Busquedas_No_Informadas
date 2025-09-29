@@ -3,13 +3,14 @@
 #include <algorithm>
 #include <deque>
 #include <stack>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace {
 
 // Reconstruye camino origin->goal con parent[v] = padre de v (o -1).
 std::vector<int> ReconstructPath(int origin, int goal, const std::vector<int>& parent) {
   std::vector<int> path;
-  if (goal < 0) return path;
   int cur = goal;
   while (cur != -1) {
     path.push_back(cur);
@@ -48,61 +49,53 @@ SearchResult UninformedSearch::Bfs(const Graph& g, int origin, int dest) {
 
   const int n = static_cast<int>(g.NumVertices());
   std::vector<int> parent(n + 1, -1);
-  std::vector<bool> visited(n + 1, false);
+  std::vector<bool> discovered(n + 1, false);  // marcado al ENCOLAR
+  std::vector<bool> inspected(n + 1, false);   // inspeccionados (una sola vez)
 
   std::deque<int> q;
+
+  std::vector<int> gen_acc;   // acumulado con duplicados (excluye padre)
+  std::vector<int> insp_acc;  // inspeccionados acumulado
+
+  // Iteración 1: encolamos origen y lo marcamos descubierto
   q.push_back(origin);
-  visited[origin] = true;
-
-  // Acumulados (con duplicados).
-  std::vector<int> gen_acc;   // historial de “generados”.
-  std::vector<int> insp_acc;  // historial de inspeccionados.
-
-  // El origen cuenta como primer “generado”.
+  discovered[origin] = true;
+  parent[origin] = -1;
   gen_acc.push_back(origin);
 
   while (!q.empty()) {
     int u = q.front();
     q.pop_front();
 
-    // --- Snapshot al inicio de la iteración (antes de expandir u) ---
+    if (inspected[u]) continue;       // nunca inspeccionamos dos veces el mismo nodo
+    inspected[u] = true;
+
+    // Snapshot AL INICIO de la iteración
     res.expanded_nodes.push_back(u);
-    res.generated_acc.push_back(gen_acc);   // acumulado hasta ahora (con duplicados)
-    res.inspected_acc.push_back(insp_acc);  // inspeccionados hasta ahora
+    res.generated_acc.push_back(gen_acc);
+    res.inspected_acc.push_back(insp_acc);
 
     // Inspeccionamos u
     insp_acc.push_back(u);
 
-    // Parada inmediata si el inspeccionado es el destino (criterio profesora)
     if (u == dest) {
-      // Iteración sin sucesores (no se expanden más)
-      res.successors_step.push_back({});
-      res.enqueued_step.push_back({});
-
-      // Snapshot final “post-inspección” (estilo de la foto negra)
-      res.expanded_nodes.push_back(u);
-      res.generated_acc.push_back(gen_acc);   // generados no cambian
-      res.inspected_acc.push_back(insp_acc);  // ahora incluye al destino
-
       res.path = ReconstructPath(origin, dest, parent);
       res.total_cost = ComputePathCost(g, res.path);
       res.found = true;
       return res;
     }
 
-    // Generamos sucesores de u
-    std::vector<int> succ_this;
-    std::vector<int> enq_this;
-
+    // Generar sucesores en orden ascendente
     auto neigh = g.Neighbors(u);
-    std::sort(neigh.begin(), neigh.end());  // orden determinista
+    std::sort(neigh.begin(), neigh.end());
 
-    int parent_u = parent[u];  // -1 en la raíz
+    std::vector<int> succ_this, enq_this;
     for (int v : neigh) {
-      succ_this.push_back(v);            // se muestran todos los sucesores
-      if (v != parent_u) gen_acc.push_back(v);  // acumulado con duplicados (excluye padre)
-      if (!visited[v]) {
-        visited[v] = true;
+      succ_this.push_back(v);
+      if (v != parent[u]) gen_acc.push_back(v);  // “generados” con duplicados (excluye padre)
+
+      if (!discovered[v]) {
+        discovered[v] = true;   // marcar al ENCOLAR evita duplicados en cola
         parent[v] = u;
         q.push_back(v);
         enq_this.push_back(v);
@@ -113,81 +106,102 @@ SearchResult UninformedSearch::Bfs(const Graph& g, int origin, int dest) {
     res.enqueued_step.push_back(enq_this);
   }
 
-  return res;  // no encontrado
+  return res;
 }
 
 // ======================= DFS =======================
+
+// Estado = (nodo, padre) para permitir reinspecciones por ramas distintas.
+struct State { int node; int parent; };
+struct StateHash {
+  std::size_t operator()(const State& s) const noexcept {
+    return (static_cast<std::size_t>(s.node) << 20) ^ static_cast<std::size_t>(s.parent + 1);
+  }
+};
+struct StateEq {
+  bool operator()(const State& a, const State& b) const noexcept {
+    return a.node == b.node && a.parent == b.parent;
+  }
+};
+
+static std::vector<int> ReconstructPathFromStates(
+    int origin, State cur,
+    const std::unordered_map<State, State, StateHash, StateEq>& pred) {
+  std::vector<int> rev; rev.push_back(cur.node);
+  State s = cur;
+  while (!(s.node == origin && s.parent == -1)) {
+    auto it = pred.find(s);
+    if (it == pred.end()) break;
+    State p = it->second;
+    rev.push_back(p.node);
+    s = p;
+  }
+  std::reverse(rev.begin(), rev.end());
+  return rev;
+}
+
 SearchResult UninformedSearch::Dfs(const Graph& g, int origin, int dest) {
   SearchResult res;
 
+  // -------- Estado en la pila: (nodo actual, padre desde el que llego) --------
+  struct S { int u; int p; };
+
   const int n = static_cast<int>(g.NumVertices());
   std::vector<int> parent(n + 1, -1);
-  std::vector<bool> visited(n + 1, false);
+  std::vector<bool> inspected(n + 1, false);   // asegura: cada nodo se inspecciona UNA sola vez
 
-  std::stack<int> st;
-  st.push(origin);
+  std::stack<S> st;
 
-  std::vector<int> gen_acc;
-  std::vector<int> insp_acc;
+  // Acumulados que imprime tu DumpReport
+  std::vector<int> gen_acc;   // “Generados” acumulado con duplicados (excluye padre)
+  std::vector<int> insp_acc;  // “Inspeccionados” acumulado (sin repetidos)
 
+  // Iteración 1: metemos la raíz; NO marcamos descubierto aquí (permitimos duplicados en pila)
+  st.push({origin, -1});
   gen_acc.push_back(origin);
 
   while (!st.empty()) {
-    int u = st.top();
+    S cur = st.top();
     st.pop();
 
-    if (visited[u]) {
-      // Descartes por ya visitado no cuentan como iteración.
-      continue;
-    }
+    // Si este nodo ya fue inspeccionado, lo ignoramos (no cuenta como iteración)
+    if (inspected[cur.u]) continue;
 
-    // --- Snapshot al inicio de la iteración ---
-    res.expanded_nodes.push_back(u);
+    // ---------- Snapshot AL INICIO de la iteración (antes de generar sucesores) ----------
+    res.expanded_nodes.push_back(cur.u);
     res.generated_acc.push_back(gen_acc);
     res.inspected_acc.push_back(insp_acc);
 
-    // Inspeccionar u
-    visited[u] = true;
-    insp_acc.push_back(u);
+    // Inspeccionamos por PRIMERA vez este nodo
+    inspected[cur.u] = true;
+    if (parent[cur.u] == -1) parent[cur.u] = cur.p;  // fijamos el padre desde el estado
+    insp_acc.push_back(cur.u);
 
-    // Parada inmediata si u es el destino
-    if (u == dest) {
-      res.successors_step.push_back({});
-      res.enqueued_step.push_back({});
-
-      // Snapshot final “post-inspección”
-      res.expanded_nodes.push_back(u);
-      res.generated_acc.push_back(gen_acc);
-      res.inspected_acc.push_back(insp_acc);
-
+    // ¿Destino?
+    if (cur.u == dest) {
       res.path = ReconstructPath(origin, dest, parent);
       res.total_cost = ComputePathCost(g, res.path);
       res.found = true;
-      return res;
+      return res;  // sin snapshot extra (tal como te piden)
     }
 
-    // Sucesores; para DFS apilamos en orden inverso tras ordenar
-    auto neigh = g.Neighbors(u);
-    std::sort(neigh.begin(), neigh.end());
-    std::vector<int> succ_this;
-    std::vector<int> enq_this;
+    // === CLAVE: no ordenamos vecinos; usamos el orden natural que da Graph::Neighbors(u) ===
+    const auto& neigh = g.Neighbors(cur.u);
 
-    int parent_u = parent[u];
+    // 1) Actualizar “Generados” (acumulado con duplicados), excluyendo al padre directo
+    for (int v : neigh) {
+      if (v != parent[cur.u]) gen_acc.push_back(v);
+    }
+
+    // 2) APILAR en orden inverso al natural para recorrerlos luego en su orden natural (LIFO)
     for (auto it = neigh.rbegin(); it != neigh.rend(); ++it) {
       int v = *it;
-      succ_this.push_back(v);
-      if (v != parent_u) gen_acc.push_back(v);  // acumulado con duplicados (excluye padre)
-      if (!visited[v]) {
-        if (parent[v] == -1) parent[v] = u;
-        st.push(v);
-        enq_this.push_back(v);
-      }
+      if (v == parent[cur.u]) continue;  // evita vuelta inmediata al padre
+      st.push({v, cur.u});               // permitimos duplicados en pila; se filtrarán en 'inspected'
     }
-
-    res.successors_step.push_back(succ_this);
-    res.enqueued_step.push_back(enq_this);
   }
 
-  return res;
+  return res;  // no encontrado
 }
+
 
